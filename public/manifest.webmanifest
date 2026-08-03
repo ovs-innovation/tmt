@@ -1,0 +1,18 @@
+{
+  "name": "Amba Shakti Steel",
+  "short_name": "Amba Shakti",
+  "description": "Buy genuine TMT, get quotes, find dealers, and verify with QR.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAFAF8",
+  "theme_color": "#D71920",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/logo-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
