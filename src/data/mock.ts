@@ -223,11 +223,11 @@ export const referrals = {
   rewarded: 4,
   earnings: 4000,
   leaderboard: [
-    { rank: 1, name: 'Suresh Patel', points: 18200, city: 'Ahmedabad' },
-    { rank: 2, name: 'Meena Constructions', points: 15400, city: 'Noida' },
-    { rank: 3, name: 'You', points: 12650, city: 'Delhi', you: true },
-    { rank: 4, name: 'Ravi Infra', points: 11200, city: 'Jaipur' },
-    { rank: 5, name: 'BuildRight Co.', points: 9800, city: 'Lucknow' },
+    { rank: 1, name: 'Suresh Patel', points: 18200, city: 'Ahmedabad', avatar: '/suresh.png' },
+    { rank: 2, name: 'Meena Constructions', points: 15400, city: 'Noida', avatar: '/meena.png' },
+    { rank: 3, name: 'You', points: 12650, city: 'Delhi', you: true, avatar: '/avatar-dristy.png' },
+    { rank: 4, name: 'Ravi Infra', points: 11200, city: 'Jaipur', avatar: '/ravi.png' },
+    { rank: 5, name: 'BuildRight Co.', points: 9800, city: 'Lucknow', avatar: '/buildright.png' },
   ],
 }
 
