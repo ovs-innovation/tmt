@@ -6,7 +6,9 @@ import {
   ChevronRight,
   FileText,
   Gift,
+  LogOut,
   MapPin,
+  Menu,
   Mic,
   Package,
   Plus,
@@ -71,7 +73,7 @@ const banners = [
 ]
 
 export default function Home() {
-  const { userName, role, showToast, setDrawerOpen } = useApp()
+  const { userName, role, showToast, setDrawerOpen, setRole } = useApp()
   const { dealer, transactions, simulateSale } = useRewards()
   const [loading, setLoading] = useState(true)
   const [banner, setBanner] = useState(0)
@@ -108,20 +110,51 @@ export default function Home() {
     )
 
     return (
-      <div className="px-4 pt-16 pb-24 space-y-4">
-        {/* Top Greeting & Partner Status */}
+      <div className="px-4 pt-14 pb-24 space-y-4">
+        {/* Top App Bar with Hamburger Menu & Logout */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-black text-ink leading-tight">
-              Namaste, {userName}
-            </h1>
-            <p className="text-xs text-muted font-bold mt-0.5">
-              {dealer.dealerName} · Authorized Depot
-            </p>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white shadow-xs active:scale-95 transition"
+              aria-label="Open menu"
+            >
+              <Menu size={18} className="text-ink" />
+            </button>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-wider text-primary">
+                DEALER WORKSPACE
+              </p>
+              <h1 className="text-base font-black text-ink leading-tight">
+                Namaste, {userName}
+              </h1>
+            </div>
           </div>
-          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[9px] font-black tracking-wider text-emerald-800 uppercase">
-            {dealer.partnerStatus}
+
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-black tracking-wider text-emerald-800 uppercase">
+              {dealer.partnerStatus}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setRole(null)
+                window.location.href = '/role'
+              }}
+              title="Logout / Switch Role"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-white text-muted hover:text-primary shadow-xs active:scale-95 transition"
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-xl border border-line/70 bg-bg p-2 text-xs flex items-center justify-between">
+          <span className="font-bold text-ink truncate text-[11px]">
+            {dealer.dealerName} · Authorized Depot
           </span>
+          <span className="text-[10px] text-muted font-bold">ID: AS-D771</span>
         </div>
 
         {/* Dealer Rewards Wallet Card (Direct on Home!) */}
