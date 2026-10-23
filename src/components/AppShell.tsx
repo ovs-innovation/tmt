@@ -22,8 +22,8 @@ export function AppShell() {
       ? [
           { to: '/app/home', label: 'Home', icon: Home },
           { to: '/app/dealer/orders', label: 'Orders', icon: ClipboardList },
+          { to: '/app/rewards', label: 'Rewards', icon: Gift },
           { to: '/app/dealer/stock', label: 'Stock', icon: Boxes },
-          { to: '/app/profile', label: 'Profile', icon: User },
         ]
       : [
           { to: '/app/home', label: 'Home', icon: Home },

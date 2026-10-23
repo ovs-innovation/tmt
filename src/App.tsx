@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
+import { RewardsProvider } from './context/RewardsContext'
 import { AppShell } from './components/AppShell'
 import Splash from './pages/Splash'
 import Welcome from './pages/Welcome'
@@ -35,7 +36,8 @@ import Admin from './pages/Admin'
 export default function App() {
   return (
     <AppProvider>
-      <BrowserRouter>
+      <RewardsProvider>
+        <BrowserRouter>
         <Routes>
           <Route path="/" element={<Splash />} />
           <Route path="/welcome" element={<Welcome />} />
@@ -74,6 +76,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      </RewardsProvider>
     </AppProvider>
   )
 }

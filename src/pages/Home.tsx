@@ -24,6 +24,7 @@ import { useApp } from '../context/AppContext'
 import { dealers, livePrice, orders, products, rewards } from '../data/mock'
 import { dealerImage, images, productImage } from '../data/images'
 import { useEffect, useState } from 'react'
+import { useRewards, CATALOGUE_ITEMS } from '../context/RewardsContext'
 
 const services = [
   { to: '/app/catalogue', label: 'Buy TMT', icon: Package, bg: '#FDECEC', color: '#D71920' },
@@ -71,6 +72,7 @@ const banners = [
 
 export default function Home() {
   const { userName, role, showToast, setDrawerOpen } = useApp()
+  const { dealer, transactions, simulateSale } = useRewards()
   const [loading, setLoading] = useState(true)
   const [banner, setBanner] = useState(0)
 
@@ -100,19 +102,249 @@ export default function Home() {
   }
 
   if (role === 'dealer') {
+    const progressToNext = Math.min(
+      100,
+      Math.round((dealer.lifetimeEarned / dealer.nextTierAt) * 100)
+    )
+
     return (
-      <div className="px-5 pt-20 pb-6">
-        <h1 className="text-[24px] font-extrabold text-ink">Namaste, {userName}</h1>
-        <p className="mt-1 text-sm text-muted">Dealer workspace</p>
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <Link to="/app/dealer/orders" className="rounded-2xl brand-gradient p-4 text-white">
-            <p className="text-3xl font-extrabold">2</p>
-            <p className="mt-1 text-sm text-white/85">Pending orders</p>
+      <div className="px-4 pt-16 pb-24 space-y-4">
+        {/* Top Greeting & Partner Status */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-black text-ink leading-tight">
+              Namaste, {userName}
+            </h1>
+            <p className="text-xs text-muted font-bold mt-0.5">
+              {dealer.dealerName} · Authorized Depot
+            </p>
+          </div>
+          <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[9px] font-black tracking-wider text-emerald-800 uppercase">
+            {dealer.partnerStatus}
+          </span>
+        </div>
+
+        {/* Dealer Rewards Wallet Card (Direct on Home!) */}
+        <div className="overflow-hidden rounded-[22px] border border-line bg-white shadow-sm">
+          <div className="header-gradient p-4 text-white">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-black uppercase tracking-wider text-white/80">
+                DEALER WALLET APPLICATION INTERFACE
+              </span>
+              <span className="rounded-md bg-white/15 px-2 py-0.5 text-[10px] font-black text-white">
+                {dealer.tier}
+              </span>
+            </div>
+
+            <div className="mt-2.5 flex items-baseline justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-white/70 uppercase">
+                  AVAILABLE REDEEMABLE POINTS
+                </p>
+                <div className="mt-0.5 flex items-baseline gap-1.5">
+                  <span className="text-3xl font-black tracking-tight leading-none">
+                    {dealer.availablePoints.toLocaleString('en-IN')}
+                  </span>
+                  <span className="text-xs font-bold text-white/80">Pts</span>
+                </div>
+              </div>
+              <Link
+                to="/app/rewards"
+                className="rounded-xl bg-white px-3 py-1.5 text-xs font-black text-primary shadow-xs active:scale-95 transition"
+              >
+                View Slabs ➔
+              </Link>
+            </div>
+
+            {/* Progress to Platinum Tier */}
+            <div className="mt-3 border-t border-white/15 pt-2">
+              <div className="flex items-center justify-between text-[10px] font-bold text-white/80">
+                <span>Progress to {dealer.nextTier}</span>
+                <span>{progressToNext}%</span>
+              </div>
+              <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-black/25">
+                <div
+                  className="h-full rounded-full bg-amber-400 transition-all duration-500"
+                  style={{ width: `${progressToNext}%` }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Sub Metrics: Lifetime & Redeemed */}
+          <div className="grid grid-cols-2 divide-x divide-line bg-gray-50/70 p-3">
+            <div className="pr-2">
+              <p className="text-[9px] font-extrabold text-muted uppercase">LIFETIME EARNED</p>
+              <p className="mt-0.5 text-base font-black text-ink">
+                {dealer.lifetimeEarned.toLocaleString('en-IN')}{' '}
+                <span className="text-[10px] font-normal text-muted">Pts</span>
+              </p>
+              <p className="text-[10px] text-emerald-600 font-bold">
+                {dealer.customerSalesCount} Sales Invoiced
+              </p>
+            </div>
+            <div className="pl-3">
+              <p className="text-[9px] font-extrabold text-muted uppercase">TOTAL REDEEMED</p>
+              <p className="mt-0.5 text-base font-black text-ink">
+                {dealer.totalRedeemed.toLocaleString('en-IN')}{' '}
+                <span className="text-[10px] font-normal text-muted">Pts</span>
+              </p>
+              <p className="text-[10px] text-primary font-bold">
+                {dealer.giftsDelivered} Gifts Delivered
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 4 Operations Quick Stat Tiles */}
+        <div className="grid grid-cols-2 gap-2.5">
+          <Link
+            to="/app/dealer/orders"
+            className="rounded-2xl brand-gradient p-3.5 text-white shadow-xs active:scale-98 transition"
+          >
+            <p className="text-2xl font-black">2</p>
+            <p className="mt-0.5 text-xs font-bold text-white/85">Pending Orders</p>
+            <p className="text-[10px] text-white/70 mt-1">Review & Dispatch ➔</p>
           </Link>
-          <Link to="/app/dealer/stock" className="rounded-2xl border border-line bg-white p-4">
-            <p className="text-3xl font-extrabold text-secondary">1</p>
-            <p className="mt-1 text-sm text-muted">Critical SKU</p>
+
+          <Link
+            to="/app/dealer/stock"
+            className="rounded-2xl border border-line bg-white p-3.5 shadow-xs active:scale-98 transition"
+          >
+            <p className="text-2xl font-black text-secondary">1</p>
+            <p className="mt-0.5 text-xs font-bold text-ink">Critical SKU</p>
+            <p className="text-[10px] text-muted mt-1">12 mm stock low ➔</p>
           </Link>
+        </div>
+
+        {/* Quick Simulator Bar for Live Demo */}
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-3 flex items-center justify-between gap-2 shadow-2xs">
+          <div className="min-w-0">
+            <p className="text-[10px] font-black text-amber-900 uppercase">
+              LIVE DEMO SIMULATOR
+            </p>
+            <p className="text-xs font-bold text-ink truncate">
+              Log Invoice: ₹50,000 (+20% Bonus)
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              const res = simulateSale(50000, 'Apex Build')
+              showToast(`✓ +${res.points} Pts added to Dealer Wallet!`)
+            }}
+            className="shrink-0 rounded-xl brand-gradient px-3 py-1.5 text-xs font-extrabold text-white shadow-xs active:scale-95 transition"
+          >
+            + Credit 600 Pts
+          </button>
+        </div>
+
+        {/* Volume Multipliers Snapshot */}
+        <div className="rounded-2xl border border-line bg-white p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between border-b border-line pb-2 mb-2">
+            <div>
+              <p className="text-[10px] font-black uppercase text-primary tracking-wider">
+                VOLUME MULTIPLIERS
+              </p>
+              <h3 className="text-xs font-extrabold text-ink">
+                Progressive Slabs Ratio
+              </h3>
+            </div>
+            <Link to="/app/rewards" className="text-[11px] font-bold text-primary">
+              All Slabs ➔
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-3 gap-1.5 text-center text-xs">
+            <div className="rounded-xl border border-line bg-bg p-2">
+              <p className="text-[9px] text-muted font-bold">₹10,000</p>
+              <p className="text-xs font-black text-ink mt-0.5">100 Pts</p>
+              <p className="text-[9px] text-steel">Base Rate</p>
+            </div>
+            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-2">
+              <p className="text-[9px] text-amber-800 font-bold">₹50,000</p>
+              <p className="text-xs font-black text-amber-950 mt-0.5">600 Pts</p>
+              <p className="text-[9px] text-primary font-black">+20% Bonus</p>
+            </div>
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/60 p-2">
+              <p className="text-[9px] text-emerald-800 font-bold">₹1,00,000</p>
+              <p className="text-xs font-black text-emerald-950 mt-0.5">1,500 Pts</p>
+              <p className="text-[9px] text-emerald-700 font-black">+50% Bonus</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Invoices Accruals */}
+        <div className="rounded-2xl border border-line bg-white p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between border-b border-line pb-2 mb-2">
+            <h3 className="text-xs font-extrabold text-ink uppercase tracking-wide">
+              Recent Customer Invoices
+            </h3>
+            <span className="text-[10px] text-muted font-bold">
+              Automated Accrual
+            </span>
+          </div>
+
+          <div className="divide-y divide-line/60">
+            {transactions.slice(0, 4).map((tx) => (
+              <div key={tx.id} className="py-2 flex items-center justify-between gap-2">
+                <div className="min-w-0 pr-2">
+                  <p className="text-xs font-bold text-ink truncate leading-tight">
+                    {tx.title}
+                  </p>
+                  <p className="text-[10px] text-muted mt-0.5">
+                    {tx.date} · <span className="text-primary font-semibold">{tx.status}</span>
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 text-xs font-black ${
+                    tx.points > 0 ? 'text-emerald-600' : 'text-primary'
+                  }`}
+                >
+                  {tx.points > 0 ? `+${tx.points}` : tx.points} Pts
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Redemption Catalogue Preview */}
+        <div className="rounded-2xl border border-line bg-white p-3.5 shadow-2xs">
+          <div className="flex items-center justify-between border-b border-line pb-2 mb-2.5">
+            <div>
+              <p className="text-[10px] font-black uppercase text-primary tracking-wider">
+                GIFTS CATALOGUE
+              </p>
+              <h3 className="text-xs font-extrabold text-ink">
+                Material Goods & Incentives
+              </h3>
+            </div>
+            <Link to="/app/redeem" className="text-[11px] font-bold text-primary">
+              Full List ➔
+            </Link>
+          </div>
+
+          <div className="space-y-2">
+            {CATALOGUE_ITEMS.slice(0, 3).map((item) => (
+              <Link
+                key={item.id}
+                to="/app/redeem"
+                className="flex items-center justify-between rounded-xl border border-line bg-bg p-2 transition active:scale-[0.99]"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-xl p-1 bg-white rounded-lg border border-line">
+                    {item.icon}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold text-ink truncate">{item.subtitle}</p>
+                    <p className="text-[10px] text-primary font-bold">
+                      {item.points.toLocaleString('en-IN')} Points
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-muted">Claim ➔</span>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     )

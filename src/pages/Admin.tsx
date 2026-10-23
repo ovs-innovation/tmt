@@ -1,143 +1,248 @@
-import { Link } from 'react-router-dom'
-import { adminStats, livePrice } from '../data/mock'
-import { Badge } from '../components/ui'
+import { useNavigate } from 'react-router-dom'
+import {
+  ArrowLeft,
+  Gift,
+  LogOut,
+  ShieldCheck,
+} from 'lucide-react'
+import { PhoneShell } from '../components/PhoneShell'
+import { Button } from '../components/ui'
 import { useApp } from '../context/AppContext'
-
-const kpis = [
-  { label: "Today's Orders", value: String(adminStats.ordersToday) },
-  { label: 'Revenue', value: `₹${adminStats.gmv} Cr` },
-  { label: 'Top Dealer', value: 'Shakti Steel' },
-  { label: 'Top Contractor', value: 'Meena Co.' },
-  { label: 'Pending Delivery', value: '37' },
-  { label: "Today's Dispatch", value: '91' },
-  {
-    label: 'Live Steel Price',
-    value: `₹${livePrice.pricePerTon.toLocaleString('en-IN')}`,
-  },
-  { label: 'Inventory', value: '1,248 ton' },
-]
+import { adminStats, livePrice } from '../data/mock'
 
 export default function Admin() {
   const { setRole } = useApp()
+  const navigate = useNavigate()
+
+  const handleExit = () => {
+    setRole(null)
+    navigate('/role')
+  }
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-bg text-ink">
-      <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <div className="mb-2 flex items-center gap-2">
-              <img src="/logo-mark.png" alt="" className="h-7 w-7 object-contain" />
-              <p className="text-[11px] font-extrabold tracking-[0.22em] text-primary uppercase">
-                Amba Shakti · Admin
-              </p>
-            </div>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight md:text-4xl">
-              Operations command
-            </h1>
-            <p className="mt-1 text-sm text-muted">Boardroom demo · Monday, 3 Aug 2026</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge tone="live">LIVE</Badge>
-            <Link
-              to="/role"
-              onClick={() => setRole(null)}
-              className="rounded-2xl border border-line bg-white px-4 py-2.5 text-sm font-bold"
+    <PhoneShell>
+      <div className="flex h-full flex-col bg-bg overflow-hidden">
+        {/* Mobile Top Header */}
+        <div className="shrink-0 flex items-center justify-between border-b border-line bg-white px-4 pt-14 pb-3">
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={handleExit}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-line bg-bg text-ink active:scale-95 transition"
             >
-              Exit demo
-            </Link>
+              <ArrowLeft size={16} />
+            </button>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-wider text-primary">
+                AMBA SHAKTI · OPS
+              </p>
+              <h1 className="text-sm font-black text-ink leading-tight">
+                Operations Command
+              </h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-extrabold text-emerald-800">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              LIVE
+            </span>
+            <button
+              onClick={handleExit}
+              className="rounded-lg border border-line px-2 py-1 text-[10px] font-bold text-muted hover:text-ink active:scale-95 transition"
+            >
+              Exit
+            </button>
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {kpis.map((k, i) => (
-            <div
-              key={k.label}
-              className={`rounded-[24px] border border-line p-5 shadow-[0_8px_28px_rgba(48,56,65,0.04)] ${
-                i === 0 || i === 6
-                  ? 'brand-gradient border-0 text-white'
-                  : 'bg-white'
-              }`}
-            >
-              <p
-                className={`text-xs font-bold tracking-wide uppercase ${
-                  i === 0 || i === 6 ? 'text-white/75' : 'text-muted'
-                }`}
-              >
-                {k.label}
-              </p>
-              <p className="mt-3 text-2xl font-extrabold tracking-tight md:text-[28px]">{k.value}</p>
-            </div>
-          ))}
-        </div>
+        {/* Scrollable Mobile Admin Content */}
+        <div className="app-scroll flex-1 overflow-y-auto px-4 py-4 space-y-4 pb-12">
+          {/* Executive Subtitle */}
+          <div className="flex items-center justify-between text-[11px] text-muted">
+            <span>Corporate Boardroom View</span>
+            <span className="font-semibold text-ink">Today, 3 Aug 2026</span>
+          </div>
 
-        <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-[24px] border border-line bg-white p-5 shadow-[0_8px_28px_rgba(48,56,65,0.04)] lg:col-span-2">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-extrabold">Recent orders</h2>
-              <button className="text-sm font-bold text-primary">Export</button>
+          {/* 4 Core KPIs (2x2 Clean Mobile Grid) */}
+          <div className="grid grid-cols-2 gap-2.5">
+            <div className="rounded-2xl header-gradient p-3.5 text-white shadow-xs">
+              <p className="text-[9px] font-extrabold uppercase tracking-wide text-white/80">
+                TODAY'S ORDERS
+              </p>
+              <p className="mt-1 text-2xl font-black">{adminStats.ordersToday}</p>
+              <p className="mt-0.5 text-[10px] text-white/70">91 Dispatched</p>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] text-left text-sm">
-                <thead className="text-muted">
-                  <tr className="border-b border-line">
-                    <th className="pb-3 font-semibold">Order</th>
-                    <th className="pb-3 font-semibold">Customer</th>
-                    <th className="pb-3 font-semibold">Dealer</th>
-                    <th className="pb-3 font-semibold">Amount</th>
-                    <th className="pb-3 font-semibold">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {adminStats.recentOrders.map((o) => (
-                    <tr key={o.id} className="border-b border-[#F3F1EC]">
-                      <td className="py-3.5 font-bold">{o.id}</td>
-                      <td className="py-3.5">{o.user}</td>
-                      <td className="py-3.5">{o.dealer}</td>
-                      <td className="py-3.5">₹{o.amount.toLocaleString('en-IN')}</td>
-                      <td className="py-3.5">
-                        <Badge
-                          tone={
-                            o.status === 'Delivered'
-                              ? 'success'
-                              : o.status === 'Placed'
-                                ? 'neutral'
-                                : 'warning'
-                          }
-                        >
-                          {o.status}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+            <div className="rounded-2xl border border-line bg-white p-3.5 shadow-xs">
+              <p className="text-[9px] font-extrabold uppercase tracking-wide text-muted">
+                REVENUE GMV
+              </p>
+              <p className="mt-1 text-2xl font-black text-ink">₹{adminStats.gmv} Cr</p>
+              <p className="mt-0.5 text-[10px] text-emerald-600 font-bold">+12% vs last week</p>
+            </div>
+
+            <div className="rounded-2xl border border-line bg-white p-3.5 shadow-xs">
+              <p className="text-[9px] font-extrabold uppercase tracking-wide text-muted">
+                LIVE STEEL RATE
+              </p>
+              <p className="mt-1 text-xl font-black text-ink">
+                ₹{livePrice.pricePerTon.toLocaleString('en-IN')}
+              </p>
+              <p className="mt-0.5 text-[10px] text-primary font-bold">Fe 550D NCR Base</p>
+            </div>
+
+            <div className="rounded-2xl border border-line bg-white p-3.5 shadow-xs">
+              <p className="text-[9px] font-extrabold uppercase tracking-wide text-muted">
+                INVENTORY POOL
+              </p>
+              <p className="mt-1 text-xl font-black text-ink">1,248 T</p>
+              <p className="mt-0.5 text-[10px] text-steel">Across 48 Godowns</p>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="rounded-[24px] bg-ink p-5 text-white">
-              <p className="text-xs font-bold tracking-wide text-white/55 uppercase">Top dealer</p>
-              <p className="mt-3 text-2xl font-extrabold">Shakti Steel Traders</p>
-              <p className="mt-2 text-sm text-white/60">₹48.2L GMV · 98% SLA</p>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
-                <div className="brand-gradient h-full w-[86%]" />
+          {/* Partner & Rewards Loyalty Health (Blueprint Integration) */}
+          <div className="rounded-2xl border border-line bg-white p-3.5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-line pb-2 mb-2.5">
+              <div className="flex items-center gap-1.5">
+                <Gift size={14} className="text-primary" />
+                <h3 className="text-xs font-black text-ink uppercase tracking-wide">
+                  Rewards & Loyalty Desk
+                </h3>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                ASM-REV-2026-v2
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-center">
+              <div className="rounded-xl border border-line bg-bg p-2">
+                <p className="text-[8px] font-extrabold text-muted uppercase">ACTIVE DEALERS</p>
+                <p className="mt-0.5 text-base font-black text-ink">48</p>
+                <p className="text-[9px] text-emerald-600 font-bold">100% Verified</p>
+              </div>
+
+              <div className="rounded-xl border border-line bg-bg p-2">
+                <p className="text-[8px] font-extrabold text-muted uppercase">PTS ISSUED</p>
+                <p className="mt-0.5 text-base font-black text-ink">1.48 L</p>
+                <p className="text-[9px] text-muted">On Sales Invoices</p>
+              </div>
+
+              <div className="rounded-xl border border-line bg-bg p-2">
+                <p className="text-[8px] font-extrabold text-muted uppercase">GIFTS CLAIMED</p>
+                <p className="mt-0.5 text-base font-black text-ink">28</p>
+                <p className="text-[9px] text-primary font-bold">Dispatched</p>
               </div>
             </div>
-            <div className="rounded-[24px] border border-line bg-white p-5">
-              <p className="text-xs font-bold tracking-wide text-muted uppercase">
-                Top contractor
-              </p>
-              <p className="mt-3 text-2xl font-extrabold text-ink">Meena Constructions</p>
-              <p className="mt-2 text-sm text-muted">15.4k reward pts · 7 sites active</p>
-            </div>
-            <div className="brand-gradient-soft rounded-[24px] border border-transparent p-5">
-              <p className="text-xs font-bold tracking-wide text-secondary uppercase">Inventory pulse</p>
-              <p className="mt-2 text-xl font-extrabold text-ink">TMT 12 mm running low in NCR</p>
-              <p className="mt-2 text-sm text-muted">3.4 ton across mapped dealers</p>
+
+            <div className="mt-2.5 flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800">
+              <span className="flex items-center gap-1">
+                <ShieldCheck size={13} className="text-emerald-600" />
+                Enterprise Fraud Safeguards
+              </span>
+              <span>0 Violations</span>
             </div>
           </div>
+
+          {/* Top Dealer & Contractor Spotlights */}
+          <div className="space-y-2.5">
+            <div className="rounded-2xl bg-ink p-4 text-white shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase tracking-wider text-white/60">
+                  TOP DEALER SPOTLIGHT
+                </span>
+                <span className="rounded-md bg-white/15 px-2 py-0.5 text-[9px] font-extrabold text-amber-400">
+                  Gold Partner
+                </span>
+              </div>
+              <p className="mt-2 text-base font-black">Shakti Steel Traders</p>
+              <p className="text-[11px] text-white/70">
+                ₹48.2L GMV · 98% Fulfillment SLA · 14,850 Pts
+              </p>
+              <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/15">
+                <div className="h-full rounded-full bg-amber-400 w-[86%]" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-line bg-white p-3.5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-black uppercase tracking-wider text-muted">
+                  TOP CONTRACTOR SPOTLIGHT
+                </span>
+                <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[9px] font-extrabold text-primary">
+                  Site Lead
+                </span>
+              </div>
+              <p className="mt-1 text-sm font-black text-ink">Meena Constructions</p>
+              <p className="text-[11px] text-muted">
+                15.4k Reward Points · 7 Sites Active in NCR
+              </p>
+            </div>
+          </div>
+
+          {/* Recent Orders Stream */}
+          <div className="rounded-2xl border border-line bg-white p-3.5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-line pb-2 mb-2">
+              <h3 className="text-xs font-black text-ink uppercase tracking-wide">
+                Live Orders Pipeline
+              </h3>
+              <span className="text-[10px] text-muted font-bold">Latest 4</span>
+            </div>
+
+            <div className="divide-y divide-line/60">
+              {adminStats.recentOrders.slice(0, 4).map((o) => (
+                <div key={o.id} className="py-2.5 flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-black text-ink">{o.id}</span>
+                      <span className="text-[11px] text-muted truncate">({o.user})</span>
+                    </div>
+                    <p className="text-[10px] text-steel truncate mt-0.5">
+                      Dealer: {o.dealer}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs font-black text-ink">
+                      ₹{o.amount.toLocaleString('en-IN')}
+                    </p>
+                    <span
+                      className={`inline-block mt-0.5 rounded px-1.5 py-0.2 text-[9px] font-extrabold ${
+                        o.status === 'Delivered'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : o.status === 'Placed'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-amber-100 text-amber-800'
+                      }`}
+                    >
+                      {o.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Inventory Pulse */}
+          <div className="rounded-2xl border border-line bg-amber-50/50 p-3.5 text-xs">
+            <p className="text-[10px] font-black uppercase text-amber-900 tracking-wider">
+              INVENTORY ALERT
+            </p>
+            <p className="mt-1 font-bold text-ink">
+              TMT 12 mm running low in NCR East
+            </p>
+            <p className="mt-0.5 text-[11px] text-muted">
+              3.4 ton buffer across mapped depots. Next rolling mill dispatch due tomorrow morning.
+            </p>
+          </div>
+
+          {/* Exit Button */}
+          <Button
+            variant="outline"
+            className="w-full h-10 text-xs font-bold text-primary border-primary/30 hover:bg-primary/5"
+            onClick={handleExit}
+          >
+            <LogOut size={14} /> Exit to Role Selection
+          </Button>
         </div>
       </div>
-    </div>
+    </PhoneShell>
   )
 }
